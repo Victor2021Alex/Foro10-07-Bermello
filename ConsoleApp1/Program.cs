@@ -27,6 +27,7 @@ class Program
         await guardarEstudianteAsync();
         await guardarCursoAsync();
         await guardarEstudianteCursoAsync();
+        await guardarEstudianteYdireccionAsync();
 
         //consultarAlumnosyCursos();
     }
@@ -42,6 +43,7 @@ class Program
         std.LastName = "Perez";
         await estudianteRepository.guardarEstudiante(std);
     }
+
     public static async Task guardarCursoAsync()
     {
         Console.WriteLine("Guardar cursos desde la clase Repository");
@@ -54,37 +56,65 @@ class Program
     public static async Task guardarEstudianteCursoAsync()
     {
         Console.WriteLine("Guardar EstudianteCurso desde la clase Repository");
-        StudentCourseRepository cursoRepository = new StudentCourseRepository();
+        StudentCourseRepository StudentcursoRepository = new StudentCourseRepository();
         StudentCourse stdCourse = new StudentCourse();
 
-        stdCourse.CourseId = 3;//course.CourseId;
-        stdCourse.StudentId = 3; //std.StudentId;
+        stdCourse.CourseId = 3;
+        stdCourse.StudentId = 3; 
 
-        await cursoRepository.guardarStudentCurso(stdCourse);
+        await StudentcursoRepository.guardarStudentCurso(stdCourse);
     }
-
-    public static void guardarEstudianteYdireccion()
+    public static async Task guardarEstudianteYdireccionAsync()
     {
-        Console.WriteLine("Metodo agregar estudiante y direccion");
-
-        SchoolContext context = new SchoolContext();
+        Console.WriteLine("Metodo agregar estudiante y direccion desde la clase Repository");
+        StudentAddressRepository StudentDireccionRepository = new StudentAddressRepository();
         Student std = new Student();
         StudentAddress stdAddress = new StudentAddress();
-        
+
         std.Name = "Ciri";
-        context.Students.Add(std);
-        context.SaveChanges();
 
         stdAddress.Address1 = "direccion 1";
         stdAddress.Address2 = "direccion 2";
         stdAddress.StudentID = std.StudentId;
         stdAddress.City = "gye";
         stdAddress.State = "ecu";
-        stdAddress.Student= std;
-       
-        context.StudentAddresses.Add(stdAddress);
+        stdAddress.Student = std;
 
-        context.SaveChanges();
+        await StudentDireccionRepository.guardarStudentAddress(stdAddress);
+
+    }
+    public static async Task guardarEstudianteYdireccionTransactionAsync()
+    {
+        Console.WriteLine("Metodo agregar estudiante y direccion desde la clase Repository");
+        SchoolContext context = new SchoolContext();
+        StudentAddressRepository StudentDireccionRepository = new StudentAddressRepository();
+        Student std = new Student();
+        StudentAddress stdAddress = new StudentAddress();
+        var dbContextTransaction = context.Database.BeginTransaction();
+
+        try
+        {
+            std.Name = "Karina";
+
+
+            stdAddress.Address1 = "direccion 1";
+            stdAddress.Address2 = "direccion 2";
+            stdAddress.StudentID = std.StudentId;
+            stdAddress.City = "gye";
+            stdAddress.State = "ecu";
+
+            await StudentDireccionRepository.guardarStudentAddress(stdAddress);
+            dbContextTransaction.Commit();
+            Console.WriteLine("Datos guardados con exito");
+
+
+        }
+        catch (Exception e)
+        {
+            dbContextTransaction.Rollback();
+            Console.WriteLine("Error " + e.ToString());
+        }
+
 
     }
 
@@ -248,20 +278,7 @@ class Program
 
 
     }
-    //agregar estudiante
-    public static void agregarEstudiante()
-    {
-        Console.WriteLine("Metodo agregar estudiante");
-        
-        SchoolContext context = new SchoolContext();
-        Student std = new Student();
-        std.Name = "Pedro";
-        context.Students.Add(std);
-        context.SaveChanges();
-      
-        Console.WriteLine("Codigo: "+ std.StudentId + " Nombre: "+ std.Name);
 
-    }
 
     public static void consultarEstudiantes()
     {
