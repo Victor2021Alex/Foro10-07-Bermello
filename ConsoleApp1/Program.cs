@@ -25,6 +25,8 @@ class Program
         //guardarEstudianteCurso();
         //consultarAlumnosyCursos();
         await guardarEstudianteAsync();
+        await guardarCursoAsync();
+        await guardarEstudianteCursoAsync();
 
         //consultarAlumnosyCursos();
     }
@@ -40,38 +42,27 @@ class Program
         std.LastName = "Perez";
         await estudianteRepository.guardarEstudiante(std);
     }
-
-    public static void guardarCurso()
+    public static async Task guardarCursoAsync()
     {
-        Console.WriteLine("Guardar Curso");
-        SchoolContext context = new SchoolContext();
+        Console.WriteLine("Guardar cursos desde la clase Repository");
+        CourseRepository cursoRepository = new CourseRepository();
         Course course = new Course();
 
         course.CourseName = "Tercero";
-        context.Courses.Add(course);
-        context.SaveChanges();
+        await cursoRepository.guardarCurso(course);
     }
-    public static void guardarEstudianteCurso()
+    public static async Task guardarEstudianteCursoAsync()
     {
-        Console.WriteLine("Guardar EstudianteCurso");
-        SchoolContext context = new SchoolContext();
+        Console.WriteLine("Guardar EstudianteCurso desde la clase Repository");
+        StudentCourseRepository cursoRepository = new StudentCourseRepository();
         StudentCourse stdCourse = new StudentCourse();
-        /*
-        Student std = new Student();
-        std = context.Students.Find(1);
-        
-        Course course = new Course();
-        course = context.Courses.Find(1);
-        */
+
         stdCourse.CourseId = 3;//course.CourseId;
         stdCourse.StudentId = 3; //std.StudentId;
-        /*
-        stdCourse.Student = std;
-        stdCourse.Course = course;
-        */
-        context.StudentCourses.Add(stdCourse);
-        context.SaveChanges();
+
+        await cursoRepository.guardarStudentCurso(stdCourse);
     }
+
     public static void guardarEstudianteYdireccion()
     {
         Console.WriteLine("Metodo agregar estudiante y direccion");
